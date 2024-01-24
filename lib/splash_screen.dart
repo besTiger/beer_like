@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatelessWidget {
@@ -5,6 +7,9 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Timer(const Duration(seconds: 2), () {
+      Navigator.of(context).pushReplacementNamed('/login');
+    });
     return Scaffold(
       body: Stack(
         children: [

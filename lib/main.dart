@@ -1,8 +1,15 @@
 import 'package:beer_like/splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'login_screen.dart';
+
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -11,9 +18,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    return  MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      initialRoute: '/splash',
+      routes: {
+        '/splash': (context) => const SplashScreen(),
+        '/login': (context) => const LoginScreen(),
+      }
     );
   }
 }

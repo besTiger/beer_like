@@ -1,7 +1,6 @@
-import 'package:beer_like/splash_screen.dart';
+import 'package:beer_like/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'login_screen.dart';
 
 

@@ -29,7 +29,6 @@ class DatabaseHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         imagePath TEXT,
         title TEXT,
-        description TEXT
       )
     ''');
   }

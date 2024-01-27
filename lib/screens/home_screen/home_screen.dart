@@ -1,4 +1,3 @@
-
 import 'package:beer_like/screens/home_screen/photo_model.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
@@ -32,20 +31,60 @@ class HomeScreenState extends State<HomeScreen> {
 
   Future<void> _takePhoto() async {
     final picker = ImagePicker();
-    final pickedFile =
-    await picker.pickImage(source: ImageSource.camera);
+    final pickedFile = await picker.pickImage(source: ImageSource.camera);
 
     if (pickedFile != null) {
-      int id = await DatabaseHelper.instance.insertPhoto({
-        'imagePath': pickedFile.path,
-        'description': '',
-      });
+      // Show a dialog to get the title from the user
+      String? title = await _getTitleFromUser();
 
-      setState(() {
-        photoList.add(PhotoItem(
-            id: id, imagePath: pickedFile.path, title: ''));
-      });
+      if (title != null) {
+        // Insert the photo into the database
+        int id = await DatabaseHelper.instance.insertPhoto({
+          'imagePath': pickedFile.path,
+          'title': title,
+        });
+
+        // Update the UI with the new photo
+        setState(() {
+          photoList.add(PhotoItem(
+            id: id,
+            imagePath: pickedFile.path,
+            title: title,
+          ));
+        });
+      }
     }
+  }
+
+  Future<String?> _getTitleFromUser() async {
+    TextEditingController titleController = TextEditingController();
+
+    return showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Enter Title'),
+          content: TextField(
+            controller: titleController,
+            decoration: const InputDecoration(hintText: 'Title'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, null); // Cancel
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, titleController.text.trim());
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -118,5 +157,4 @@ class HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
 }

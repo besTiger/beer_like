@@ -15,13 +15,13 @@ class _BottomNavigationBarExampleState
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static const List<Widget> _widgetOptions = <Widget>[
+  static  List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
-    Text(
+    const Text(
       'Index 1: Search',
       style: optionStyle,
     ),
-    Text(
+    const Text(
       'Index 2: PROFILE settings',
       style: optionStyle,
     ),

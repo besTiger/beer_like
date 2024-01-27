@@ -28,6 +28,7 @@ class DatabaseHelper {
       CREATE TABLE photos(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         imagePath TEXT,
+        title TEXT,
         description TEXT
       )
     ''');

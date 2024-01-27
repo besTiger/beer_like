@@ -1,4 +1,4 @@
-import 'package:beer_like/home_screen.dart';
+import 'package:beer_like/screens/home_screen/home_screen.dart';
 import 'package:flutter/material.dart';
 
 
@@ -18,11 +18,11 @@ class _BottomNavigationBarExampleState
   static const List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
     Text(
-      'Index 1: Business',
+      'Index 1: Search',
       style: optionStyle,
     ),
     Text(
-      'Index 2: School',
+      'Index 2: PROFILE settings',
       style: optionStyle,
     ),
   ];
@@ -47,11 +47,11 @@ class _BottomNavigationBarExampleState
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
-            label: 'Business',
+            label: 'Search',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: 'School',
+            label: 'Profile',
           ),
         ],
         currentIndex: _selectedIndex,

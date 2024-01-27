@@ -1,3 +1,4 @@
+import 'package:beer_like/screens/home_screen/photo_item.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
@@ -38,7 +39,7 @@ class HomeScreenState extends State<HomeScreen> {
       });
 
       setState(() {
-        photoList.add(PhotoItem(id: id, imagePath: pickedFile.path, description: ''));
+        photoList.add(PhotoItem(id: id, imagePath: pickedFile.path, description: '', title: ''));
       });
     }
   }
@@ -49,17 +50,23 @@ class HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Photo List'),
       ),
-      body: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 8.0,
-          mainAxisSpacing: 8.0,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 16.0,
+            mainAxisSpacing: 16.0,
+            childAspectRatio: 0.8,
+          ),
+          itemCount: photoList.length,
+          itemBuilder: (context, index) {
+            return _buildPhotoItem(photoList[index]);
+          },
         ),
-        itemCount: photoList.length,
-        itemBuilder: (context, index) {
-          return _buildPhotoItem(photoList[index]);
-        },
+
       ),
+
       floatingActionButton: FloatingActionButton(
         onPressed: _takePhoto,
         tooltip: 'Take a Photo',
@@ -73,14 +80,33 @@ class HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Image.file(
-              File(photoItem.imagePath),
-              fit: BoxFit.cover,
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              photoItem.title,
+              style: const TextStyle(fontSize: 16.0),
+            ),
+          ),
+          SizedBox(
+            width: double.infinity,
+            height: 130,
+            child: ClipRect(
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.black,
+                    width: 2.0,
+                  ),
+                ),
+                child: Image.file(
+                  File(photoItem.imagePath),
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(5.0),
             child: Text(
               photoItem.description,
               style: const TextStyle(fontSize: 16.0),
@@ -90,21 +116,11 @@ class HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+
+
+
+
 }
 
 
-class PhotoItem {
-  final int id;
-  final String imagePath;
-  String description;
-
-  PhotoItem({required this.id, required this.imagePath, required this.description});
-
-  factory PhotoItem.fromMap(Map<String, dynamic> map) {
-    return PhotoItem(
-      id: map['id'],
-      imagePath: map['imagePath'],
-      description: map['description'],
-    );
-  }
-}

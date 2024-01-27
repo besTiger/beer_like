@@ -42,4 +42,18 @@ class DatabaseHelper {
     Database db = await instance.database;
     return await db.query('photos');
   }
+
+  Future<int> deletePhoto(int id) async {
+    Database db = await instance.database;
+
+    try {
+      int result = await db.delete('photos', where: 'id = ?', whereArgs: [id]);
+      print('Deleted $result rows for photo with ID: $id');
+      return result;
+    } catch (e) {
+      print('Error deleting photo with ID: $id - $e');
+      return -1; // Return -1 to indicate an error
+    }
+  }
+
 }

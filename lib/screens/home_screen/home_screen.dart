@@ -1,3 +1,4 @@
+import 'package:beer_like/screens/home_screen/photo_detail_screen.dart';
 import 'package:beer_like/screens/home_screen/photo_model.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
@@ -34,17 +35,14 @@ class HomeScreenState extends State<HomeScreen> {
     final pickedFile = await picker.pickImage(source: ImageSource.camera);
 
     if (pickedFile != null) {
-      // Show a dialog to get the title from the user
       String? title = await _getTitleFromUser();
 
       if (title != null) {
-        // Insert the photo into the database
         int id = await DatabaseHelper.instance.insertPhoto({
           'imagePath': pickedFile.path,
           'title': title,
         });
 
-        // Update the UI with the new photo
         setState(() {
           photoList.add(PhotoItem(
             id: id,
@@ -87,6 +85,61 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Future<void> _navigateToPhotoDetailScreen(PhotoItem photoItem) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PhotoDetailScreen(
+          photoItem: photoItem,
+          onPhotoDeleted: _loadPhotos, // Pass the callback function
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPhotoItem(PhotoItem photoItem) {
+    return GestureDetector(
+      onTap: () {
+        _navigateToPhotoDetailScreen(photoItem);
+      },
+      child: Hero(
+        tag: 'photo${photoItem.id}',
+        child: Card(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  photoItem.title,
+                  style: const TextStyle(fontSize: 16.0),
+                ),
+              ),
+              SizedBox(
+                width: double.infinity,
+                height: 160,
+                child: ClipRect(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.black,
+                        width: 2.0,
+                      ),
+                    ),
+                    child: Image.file(
+                      File(photoItem.imagePath),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -119,41 +172,6 @@ class HomeScreenState extends State<HomeScreen> {
             height: 50,
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildPhotoItem(PhotoItem photoItem) {
-    return Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              photoItem.title,
-              style: const TextStyle(fontSize: 16.0),
-            ),
-          ),
-          SizedBox(
-            width: double.infinity,
-            height: 160,
-            child: ClipRect(
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.black,
-                    width: 2.0,
-                  ),
-                ),
-                child: Image.file(
-                  File(photoItem.imagePath),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

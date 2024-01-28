@@ -1,4 +1,5 @@
 import 'package:beer_like/screens/home_screen/home_screen.dart';
+import 'package:beer_like/screens/search_screen/search_screen.dart';
 import 'package:flutter/material.dart';
 
 
@@ -17,10 +18,7 @@ class _BottomNavigationBarExampleState
   TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static  List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
-    const Text(
-      'Index 1: Search',
-      style: optionStyle,
-    ),
+    BeerSearchScreen(),
     const Text(
       'Index 2: PROFILE settings',
       style: optionStyle,

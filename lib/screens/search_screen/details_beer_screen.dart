@@ -4,7 +4,7 @@ import 'beer_model.dart';
 class DetailsScreen extends StatelessWidget {
   final Beer beer;
 
-  DetailsScreen({required this.beer});
+  const DetailsScreen({super.key, required this.beer});
 
   @override
   Widget build(BuildContext context) {
@@ -17,13 +17,15 @@ class DetailsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-              height: 200.0,
-              width: MediaQuery.of(context).size.width, // Змінено на ширину екрану
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage(beer.imageUrl),
-                  fit: BoxFit.cover,
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0), // Add top margin
+              child: Container(
+                height: 200,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: NetworkImage(beer.imageUrl),
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
             ),
@@ -34,16 +36,16 @@ class DetailsScreen extends StatelessWidget {
                 children: [
                   Text(
                     beer.name,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 24.0,
                       color: Colors.indigo,
                     ),
                   ),
-                  SizedBox(height: 8.0),
+                  const SizedBox(height: 8.0),
                   Text(
                     beer.tagline,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontStyle: FontStyle.italic,
                       color: Colors.grey,
                     ),
@@ -51,7 +53,7 @@ class DetailsScreen extends StatelessWidget {
                   SizedBox(height: 16.0),
                   Text(
                     beer.description,
-                    style: TextStyle(fontSize: 16.0),
+                    style: const TextStyle(fontSize: 16.0),
                   ),
                 ],
               ),
@@ -62,5 +64,3 @@ class DetailsScreen extends StatelessWidget {
     );
   }
 }
-
-

@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'beer_model.dart';
+import 'details_beer_screen.dart';
+
 
 class BeerSearchScreen extends StatefulWidget {
   @override
@@ -27,7 +29,8 @@ class _BeerSearchScreenState extends State<BeerSearchScreen> {
 
       if (response.statusCode == 200) {
         List<dynamic> responseData = json.decode(response.body);
-        List<Beer> beers = responseData.map((beerData) => Beer.fromJson(beerData)).toList();
+        List<Beer> beers = responseData.map((beerData) =>
+            Beer.fromJson(beerData)).toList();
 
         setState(() {
           _searchResults = beers;
@@ -47,13 +50,13 @@ class _BeerSearchScreenState extends State<BeerSearchScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Punk API Beer Search'),
-        backgroundColor: Colors.indigo, // Змінено колір панелі
+        backgroundColor: Colors.indigo,
       ),
       body: Column(
         children: [
           Container(
             padding: EdgeInsets.all(8.0),
-            color: Colors.indigo, // Змінено колір контейнера
+            color: Colors.indigo,
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
@@ -63,7 +66,7 @@ class _BeerSearchScreenState extends State<BeerSearchScreen> {
                   onPressed: _searchBeers,
                 ),
                 filled: true,
-                fillColor: Colors.white, // Змінено колір фону текстового поля
+                fillColor: Colors.white,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(20.0),
                 ),
@@ -71,50 +74,77 @@ class _BeerSearchScreenState extends State<BeerSearchScreen> {
             ),
           ),
           Expanded(
-            child: GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 8.0,
-                mainAxisSpacing: 8.0,
-              ),
+            child: ListView.builder(
               itemCount: _searchResults.length,
               itemBuilder: (context, index) {
                 Beer beer = _searchResults[index];
 
-                return Card(
-                  elevation: 5.0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Expanded(
-                        child: beer.imageUrl.isNotEmpty
-                            ? Image.network(
-                          beer.imageUrl,
-                          fit: BoxFit.cover,
-                        )
-                            : Container(
-                          color: Colors.grey,
-                        ),
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DetailsScreen(beer: beer),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              beer.name,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
+                    );
+                  },
+                  child: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                    height: 140.0,
+                    decoration: BoxDecoration(
+                      color: Colors.indigo[100],
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 80.0,
+                          height: 130,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: Image.network(
+                              beer.imageUrl,
+                              fit: BoxFit.contain,
                             ),
-                            Text(beer.tagline),
-                          ],
+                          ),
                         ),
-                      ),
-                    ],
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  beer.name,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18.0,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                                SizedBox(height: 8.0),
+                                Text(
+                                  beer.tagline,
+                                  style: const TextStyle(
+                                    fontStyle: FontStyle.italic,
+                                    color: Colors.grey,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                                SizedBox(height: 8.0),
+                                Text(
+                                  beer.description,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 3,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
@@ -124,4 +154,5 @@ class _BeerSearchScreenState extends State<BeerSearchScreen> {
       ),
     );
   }
+
 }

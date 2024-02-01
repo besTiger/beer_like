@@ -67,25 +67,10 @@ class HomeScreenState extends State<HomeScreen> {
 
   Future<String?> _getTitleFromUser() async {
     TextEditingController titleController = TextEditingController();
-    FocusNode focusNode = FocusNode();
 
-    bool isDialogOpen = true; // Variable to track if the dialog is open
-
-    // Add listener to the focus node to open the keyboard when it gains focus
-    focusNode.addListener(() {
-      if (focusNode.hasFocus) {
-        FocusScope.of(context).requestFocus(focusNode);
-      }
-    });
-
-    await showDialog<String>(
+    return showDialog<String>(
       context: context,
       builder: (BuildContext context) {
-        // Delay the dialog to allow time for the focus request
-        Future.delayed(Duration.zero, () {
-          FocusScope.of(context).requestFocus(focusNode);
-        });
-
         return Stack(
           children: [
             ModalBarrier(
@@ -102,7 +87,7 @@ class HomeScreenState extends State<HomeScreen> {
               ),
               content: TextField(
                 controller: titleController,
-                focusNode: focusNode,
+                autofocus: true, // Set autofocus to true to open the keyboard immediately
                 decoration: InputDecoration(
                   hintText: 'Title',
                   prefixIcon: const Icon(Icons.edit), // Pencil icon inside the TextField
@@ -118,7 +103,6 @@ class HomeScreenState extends State<HomeScreen> {
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context, titleController.text.trim());
-                    isDialogOpen = false; // Set dialog status to closed when saved
                   },
                   child: const Text('Save'),
                 ),
@@ -127,10 +111,12 @@ class HomeScreenState extends State<HomeScreen> {
           ],
         );
       },
-    );
-
-    isDialogOpen = false; // Set dialog status to closed after the dialog is dismissed
+    ).then((result) {
+      return result;
+    });
   }
+
+
 
 
 

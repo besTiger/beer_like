@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -29,6 +30,8 @@ class DatabaseHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         imagePath TEXT,
         title TEXT,
+        description TEXT,
+        timestamp TEXT
       )
     ''');
   }
@@ -48,10 +51,14 @@ class DatabaseHelper {
 
     try {
       int result = await db.delete('photos', where: 'id = ?', whereArgs: [id]);
-      print('Deleted $result rows for photo with ID: $id');
+      if (kDebugMode) {
+        print('Deleted $result rows for photo with ID: $id');
+      }
       return result;
     } catch (e) {
-      print('Error deleting photo with ID: $id - $e');
+      if (kDebugMode) {
+        print('Error deleting photo with ID: $id - $e');
+      }
       return -1; // Return -1 to indicate an error
     }
   }

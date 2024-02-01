@@ -1,7 +1,6 @@
-import 'package:beer_like/signup_screen.dart';
+import 'package:beer_like/authentication/signup_screen.dart';
 import 'package:flutter/material.dart';
-import 'bottom_navigation_bar.dart';
-
+import '../screens/home_screen/home_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -121,7 +120,7 @@ class LoginScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => BottomNavigationBarExample()), // no + const
+                          builder: (context) => HomeScreen()), // no + const
                     );
                   },
                   child: Container(

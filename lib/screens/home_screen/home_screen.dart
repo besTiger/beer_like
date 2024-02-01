@@ -1,7 +1,8 @@
+import 'package:beer_like/screens/home_screen/photo_%20card_widget.dart';
 import 'package:beer_like/screens/home_screen/photo_detail_screen.dart';
 import 'package:beer_like/screens/home_screen/photo_model.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'data_base_helper.dart';
 
@@ -23,11 +24,19 @@ class HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadPhotos() async {
     List<Map<String, dynamic>> photos =
-    await DatabaseHelper.instance.retrievePhotos();
+        await DatabaseHelper.instance.retrievePhotos();
 
     setState(() {
       photoList = photos.map((photo) => PhotoItem.fromMap(photo)).toList();
     });
+
+    // Add a check for an empty list
+    if (photoList.isEmpty) {
+      // Display a message or handle it as needed
+      if (kDebugMode) {
+        print("No photos available.");
+      }
+    }
   }
 
   Future<void> _takePhoto() async {
@@ -48,6 +57,8 @@ class HomeScreenState extends State<HomeScreen> {
             id: id,
             imagePath: pickedFile.path,
             title: title,
+            description: "Default description",
+            timestamp: DateTime.now(),
           ));
         });
       }
@@ -56,34 +67,72 @@ class HomeScreenState extends State<HomeScreen> {
 
   Future<String?> _getTitleFromUser() async {
     TextEditingController titleController = TextEditingController();
+    FocusNode focusNode = FocusNode();
 
-    return showDialog<String>(
+    bool isDialogOpen = true; // Variable to track if the dialog is open
+
+    // Add listener to the focus node to open the keyboard when it gains focus
+    focusNode.addListener(() {
+      if (focusNode.hasFocus) {
+        FocusScope.of(context).requestFocus(focusNode);
+      }
+    });
+
+    await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Enter Title'),
-          content: TextField(
-            controller: titleController,
-            decoration: const InputDecoration(hintText: 'Title'),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context, null); // Cancel
-              },
-              child: const Text('Cancel'),
+        // Delay the dialog to allow time for the focus request
+        Future.delayed(Duration.zero, () {
+          FocusScope.of(context).requestFocus(focusNode);
+        });
+
+        return Stack(
+          children: [
+            ModalBarrier(
+              color: Colors.black.withOpacity(0.5),
+              dismissible: false,
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context, titleController.text.trim());
-              },
-              child: const Text('Save'),
+            AlertDialog(
+              title: Row(
+                children: [
+                  const Icon(Icons.edit), // Pencil icon for better design
+                  const SizedBox(width: 8.0),
+                  const Text('Enter Title'),
+                ],
+              ),
+              content: TextField(
+                controller: titleController,
+                focusNode: focusNode,
+                decoration: InputDecoration(
+                  hintText: 'Title',
+                  prefixIcon: const Icon(Icons.edit), // Pencil icon inside the TextField
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context, null); // Cancel
+                  },
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context, titleController.text.trim());
+                    isDialogOpen = false; // Set dialog status to closed when saved
+                  },
+                  child: const Text('Save'),
+                ),
+              ],
             ),
           ],
         );
       },
     );
+
+    isDialogOpen = false; // Set dialog status to closed after the dialog is dismissed
   }
+
+
 
   Future<void> _navigateToPhotoDetailScreen(PhotoItem photoItem) async {
     await Navigator.push(
@@ -97,68 +146,42 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildPhotoItem(PhotoItem photoItem) {
-    return GestureDetector(
-      onTap: () {
-        _navigateToPhotoDetailScreen(photoItem);
-      },
-      child: Hero(
-        tag: 'photo${photoItem.id}',
-        child: Card(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  photoItem.title,
-                  style: const TextStyle(fontSize: 16.0),
-                ),
-              ),
-              SizedBox(
-                width: double.infinity,
-                height: 160,
-                child: ClipRect(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.black,
-                        width: 2.0,
-                      ),
-                    ),
-                    child: Image.file(
-                      File(photoItem.imagePath),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Photo List'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 4.0,
-            mainAxisSpacing: 16.0,
-            childAspectRatio: 0.8,
+        title: const Text(
+          'Beer List',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
           ),
-          itemCount: photoList.length,
-          itemBuilder: (context, index) {
-            return _buildPhotoItem(photoList[index]);
-          },
+        ),
+        automaticallyImplyLeading: false,
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 4.0,
+              mainAxisSpacing: 8.0,
+              childAspectRatio: 0.7,
+            ),
+            itemCount: photoList.length,
+            itemBuilder: (context, index) {
+              return PhotoCardWidget(
+                photoItem: photoList[index],
+                onDismissed: () {
+                  _handleDismiss(index);
+                },
+                onTap: () {
+                  _navigateToPhotoDetailScreen(photoList[index]);
+                },
+              );
+            },
+          ),
         ),
       ),
       floatingActionButton: SizedBox(
@@ -175,4 +198,14 @@ class HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  void _handleDismiss(int index) async {
+    await DatabaseHelper.instance.deletePhoto(photoList[index].id);
+    setState(() {
+      photoList.removeAt(index);
+    });
+    // Refresh the photo list after dismissing a photo
+    _loadPhotos();
+  }
+
 }

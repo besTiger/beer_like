@@ -7,7 +7,11 @@ class PhotoDetailScreen extends StatefulWidget {
   final PhotoItem photoItem;
   final VoidCallback onPhotoDeleted;
 
-  const PhotoDetailScreen({Key? key, required this.photoItem, required this.onPhotoDeleted}) : super(key: key);
+  const PhotoDetailScreen({
+    Key? key,
+    required this.photoItem,
+    required this.onPhotoDeleted,
+  }) : super(key: key);
 
   @override
   _PhotoDetailScreenState createState() => _PhotoDetailScreenState();
@@ -21,7 +25,8 @@ class _PhotoDetailScreenState extends State<PhotoDetailScreen> {
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: widget.photoItem.title);
-    _descriptionController = TextEditingController(text: widget.photoItem.description);
+    _descriptionController =
+        TextEditingController(text: widget.photoItem.description);
   }
 
   @override
@@ -31,49 +36,76 @@ class _PhotoDetailScreenState extends State<PhotoDetailScreen> {
         appBar: AppBar(
           title: Text('Photo Detail'),
         ),
-        body: ListView(
+        body: Column(
           children: [
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+            Expanded(
+              child: ListView(
                 children: [
-                  Image.file(
-                    File(widget.photoItem.imagePath),
-                    fit: BoxFit.cover,
-                    height: 200,
-                  ),
-                  const SizedBox(height: 16.0),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  Center(
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        TextField(
-                          controller: _titleController,
-                          decoration: const InputDecoration(labelText: 'Title'),
+                        Image.file(
+                          File(widget.photoItem.imagePath),
+                          fit: BoxFit.cover,
+                          height: 200,
                         ),
                         const SizedBox(height: 16.0),
-                        TextField(
-                          controller: _descriptionController,
-                          decoration: const InputDecoration(labelText: 'Description'),
-                        ),
-                        const SizedBox(height: 16.0),
-                        ElevatedButton(
-                          onPressed: () {
-                            _saveChanges();
-                          },
-                          child: const Text('Save Changes'),
-                        ),
-                        const SizedBox(height: 16.0),
-                        ElevatedButton(
-                          onPressed: () {
-                            _deletePhoto();
-                          },
-                          child: const Text('Delete'),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                _titleController.text,
+                                style: TextStyle(
+                                  fontSize: 24.0, // Adjust the font size
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 16.0),
+                              Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.black,
+                                    width: 1.0,
+                                  ),
+                                ),
+                                padding: const EdgeInsets.all(8.0),
+                                child: TextField(
+                                  controller: _descriptionController,
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                  ),
+                                  maxLines: null, // Allow unlimited lines
+                                  keyboardType: TextInputType.multiline,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
                   ),
                 ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  _saveChanges();
+                },
+                child: const Text('Save Changes'),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  _deletePhoto();
+                },
+                child: const Text('Delete'),
               ),
             ),
           ],
@@ -92,7 +124,8 @@ class _PhotoDetailScreenState extends State<PhotoDetailScreen> {
         'description': updatedDescription,
       };
 
-      await DatabaseHelper.instance.updatePhoto(widget.photoItem.id, updatedPhoto);
+      await DatabaseHelper.instance
+          .updatePhoto(widget.photoItem.id, updatedPhoto);
       widget.onPhotoDeleted(); // Refresh the UI on HomeScreen
 
       ScaffoldMessenger.of(context).showSnackBar(

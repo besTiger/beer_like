@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
-import 'package:intl/intl.dart'; // Додайте цей імпорт
-
-import 'photo_model.dart';
+import 'package:intl/intl.dart';
+import '../data/photo_model.dart';
 
 class PhotoCardWidget extends StatelessWidget {
   final PhotoItem photoItem;
@@ -20,7 +19,6 @@ class PhotoCardWidget extends StatelessWidget {
     return DateFormat('yyyy-MM-dd HH:mm').format(timestamp);
   }
 
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -37,7 +35,8 @@ class PhotoCardWidget extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                     photoItem.title,
-                    style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 16.0, fontWeight: FontWeight.bold),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 2,
                   ),

@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:beer_like/screens/home_screen/photo_model.dart';
-import 'data_base_helper.dart';
+import 'package:beer_like/screens/home_screen/data/photo_model.dart';
+import '../home_screen/data/data_base_helper.dart';
 
 class PhotoDetailScreen extends StatelessWidget {
   final PhotoItem photoItem;

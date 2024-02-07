@@ -63,4 +63,20 @@ class DatabaseHelper {
     }
   }
 
+  Future<int> updatePhoto(int id, Map<String, dynamic> updatedPhoto) async {
+    Database db = await instance.database;
+
+    try {
+      int result = await db.update('photos', updatedPhoto, where: 'id = ?', whereArgs: [id]);
+      if (kDebugMode) {
+        print('Updated $result rows for photo with ID: $id');
+      }
+      return result;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error updating photo with ID: $id - $e');
+      }
+      return -1; // Return -1 to indicate an error
+    }
+  }
 }

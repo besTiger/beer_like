@@ -11,7 +11,7 @@ class PhotoItem {
     required this.id,
     required this.imagePath,
     required this.title,
-    required this.description,
+    this.description = '',
     required this.timestamp,
   });
 

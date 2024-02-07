@@ -23,56 +23,53 @@ class PhotoCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Hero(
-        tag: 'photo${photoItem.id}',
-        child: SizedBox(
-          child: Card(
-            elevation: 4,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    photoItem.title,
-                    style: const TextStyle(
-                        fontSize: 16.0, fontWeight: FontWeight.bold),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
-                  ),
+      child: SizedBox(
+        child: Card(
+          elevation: 4,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  photoItem.title,
+                  style: const TextStyle(
+                      fontSize: 16.0, fontWeight: FontWeight.bold),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
                 ),
-                SizedBox(
-                  width: double.infinity,
-                  height: 160,
-                  child: ClipRect(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.black,
-                          width: 1.0,
-                        ),
+              ),
+              SizedBox(
+                width: double.infinity,
+                height: 160,
+                child: ClipRect(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.black,
+                        width: 1.0,
                       ),
-                      child: Image.file(
-                        File(photoItem.imagePath),
-                        fit: BoxFit.cover,
-                      ),
+                    ),
+                    child: Image.file(
+                      File(photoItem.imagePath),
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        _formatTimestamp(photoItem.timestamp),
-                        style: const TextStyle(fontSize: 15.0),
-                      ),
-                    ],
-                  ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      _formatTimestamp(photoItem.timestamp),
+                      style: const TextStyle(fontSize: 15.0),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

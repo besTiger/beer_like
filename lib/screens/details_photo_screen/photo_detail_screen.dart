@@ -1,45 +1,77 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:beer_like/screens/home_screen/data/photo_model.dart';
 import '../home_screen/data/data_base_helper.dart';
 
-class PhotoDetailScreen extends StatelessWidget {
+class PhotoDetailScreen extends StatefulWidget {
   final PhotoItem photoItem;
   final VoidCallback onPhotoDeleted;
 
   const PhotoDetailScreen({Key? key, required this.photoItem, required this.onPhotoDeleted}) : super(key: key);
 
   @override
+  _PhotoDetailScreenState createState() => _PhotoDetailScreenState();
+}
+
+class _PhotoDetailScreenState extends State<PhotoDetailScreen> {
+  late TextEditingController _titleController;
+  late TextEditingController _descriptionController;
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController = TextEditingController(text: widget.photoItem.title);
+    _descriptionController = TextEditingController(text: widget.photoItem.description);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Photo Detail'),
-      ),
-      body: Hero(
-        tag: 'photo${photoItem.id}',
-        child: ListView( // Wrap with ListView for scrolling
+    return Material(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Photo Detail'),
+        ),
+        body: ListView(
           children: [
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.file(
-                    File(photoItem.imagePath),
+                    File(widget.photoItem.imagePath),
                     fit: BoxFit.cover,
-                    height: 200, // Set a fixed height for the smaller version of the photo
+                    height: 200,
                   ),
                   const SizedBox(height: 16.0),
-                  Text(
-                    photoItem.title,
-                    style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 16.0),
-                  ElevatedButton(
-                    onPressed: () {
-                      _deletePhoto(context, photoItem);
-                    },
-                    child: const Text('Delete'),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Column(
+                      children: [
+                        TextField(
+                          controller: _titleController,
+                          decoration: const InputDecoration(labelText: 'Title'),
+                        ),
+                        const SizedBox(height: 16.0),
+                        TextField(
+                          controller: _descriptionController,
+                          decoration: const InputDecoration(labelText: 'Description'),
+                        ),
+                        const SizedBox(height: 16.0),
+                        ElevatedButton(
+                          onPressed: () {
+                            _saveChanges();
+                          },
+                          child: const Text('Save Changes'),
+                        ),
+                        const SizedBox(height: 16.0),
+                        ElevatedButton(
+                          onPressed: () {
+                            _deletePhoto();
+                          },
+                          child: const Text('Delete'),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -50,7 +82,34 @@ class PhotoDetailScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _deletePhoto(BuildContext context, PhotoItem photoItem) async {
+  Future<void> _saveChanges() async {
+    String updatedTitle = _titleController.text.trim();
+    String updatedDescription = _descriptionController.text.trim();
+
+    if (updatedTitle.isNotEmpty || updatedDescription.isNotEmpty) {
+      Map<String, dynamic> updatedPhoto = {
+        'title': updatedTitle,
+        'description': updatedDescription,
+      };
+
+      await DatabaseHelper.instance.updatePhoto(widget.photoItem.id, updatedPhoto);
+      widget.onPhotoDeleted(); // Refresh the UI on HomeScreen
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Changes saved successfully'),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No changes made'),
+        ),
+      );
+    }
+  }
+
+  Future<void> _deletePhoto() async {
     bool confirmDelete = await showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -76,12 +135,17 @@ class PhotoDetailScreen extends StatelessWidget {
     );
 
     if (confirmDelete == true) {
-      await DatabaseHelper.instance.deletePhoto(photoItem.id);
-
-      // Call the callback function to update the UI on HomeScreen
-      onPhotoDeleted();
+      await DatabaseHelper.instance.deletePhoto(widget.photoItem.id);
+      widget.onPhotoDeleted(); // Refresh the UI on HomeScreen
 
       Navigator.pop(context); // Navigate back to the previous screen
     }
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
   }
 }

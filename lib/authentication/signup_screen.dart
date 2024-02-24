@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:beer_like/authentication/login_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -22,8 +23,12 @@ class SignUpScreenState extends State<SignUpScreen> {
         password: _passwordController.text,
       );
 
-      // Add additional user information to Firestore or any other database.
-      // For example, you can use FirebaseFirestore.instance.collection('users').doc(userCredential.user.uid).set({'name': _nameController.text});
+      // Add additional user information to Firestore
+      await FirebaseFirestore.instance.collection('users').doc(userCredential.user?.uid).set({
+        'name': _nameController.text,
+        'email': _emailController.text,
+        // Додайте інші дані, які ви хочете зберегти
+      });
 
       // Handle successful signup
       print("User signed up: ${userCredential.user?.uid}");
@@ -163,7 +168,7 @@ class SignUpScreenState extends State<SignUpScreen> {
                             backgroundColor: Colors.white60,
                             child: IconButton(
                               color: Colors.black,
-                              onPressed: () => signUp(context), // Connect the signup method here
+                              onPressed: () => signUp(context),
                               icon: const Icon(Icons.arrow_forward),
                               iconSize: 30,
                             ),

@@ -9,10 +9,6 @@ class LoginScreen extends StatelessWidget {
 
   Future<void> signIn(BuildContext context) async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
-      );
 
       // After successful login, you can navigate to the home screen or perform other actions.
       Navigator.push(

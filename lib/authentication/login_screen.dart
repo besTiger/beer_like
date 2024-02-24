@@ -1,9 +1,29 @@
-import 'package:beer_like/authentication/signup_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../screens/home_screen/home_screen.dart';
+import 'package:beer_like/authentication/signup_screen.dart';
 
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  Future<void> signIn(BuildContext context) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+
+      // After successful login, you can navigate to the home screen or perform other actions.
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+      );
+    } catch (e) {
+      // Handle errors, you can show an error message to the user.
+      print("Error during login: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,9 +88,9 @@ class LoginScreen extends StatelessWidget {
                   height: 10,
                 ),
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: TextFormField(
+                    controller: _emailController,
                     decoration: InputDecoration(
                       hintText: 'Email',
                       fillColor: const Color(0xfffbf9fa),
@@ -93,6 +113,7 @@ class LoginScreen extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: TextFormField(
+                    controller: _passwordController,
                     decoration: InputDecoration(
                       hintText: 'Password',
                       fillColor: const Color(0xfffbf9fa),
@@ -117,11 +138,7 @@ class LoginScreen extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => HomeScreen()), // no + const
-                    );
+                    signIn(context); // Call the signIn method when the "Log In" button is pressed
                   },
                   child: Container(
                     height: 50,
